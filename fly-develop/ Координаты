@@ -1,0 +1,5 @@
+print '%.8f : %.8f' % (flight.latitude, flight.longitude)
+10471.97333333 metres in 1 deg
+		      latitude : longitude
+start VPP -0.04855056049336841 : -74.72449313835466000
+end VPP   -0.05022509861205912 : -74.48951284451766242

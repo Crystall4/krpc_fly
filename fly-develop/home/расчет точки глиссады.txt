@@ -1,0 +1,129 @@
+runwayWest    = coordinates(name='runwayWest',   lat=-0.04855056049336841, lng=-74.72449313835466000, alt=70.0)
+runwayEast    = coordinates(name='runwayEast',   lat=-0.05022509861205912, lng=-74.48951284451766242, alt=70.0)
+===========================================================================================================================
+длинна впп 2460.7698524485572 метров
+x=x1+t*(x1-x0)
+y=y1+t*(y1-y0)
+x0;y0 координаты дальнего края впп
+x1;y1 координаты ближнего края впп
+t     растояние от ближнего края впп до выноса точки захода на глиссаду в длиннах впп
+---------------------------------------------------------------------------------------------------------------------------
+растояние от координаты до прямой
+x:y    координаты точки от которой ищем растояние
+x1:y1  координаты 1 точки лежащей на прямой
+x2:y2  координаты 2 точки лежащей на прямой
+(y1-y2)x+(x2-x1)y+(x1*y2-x2*y1) уравнение прямой
+((y1-y2)x+(x2-x1)y+(x1*y2-x2*y1))/math.sqrt(((y1-y2)**2)+((x2-x1)**2)) растояние от точки до прямой по перпендикуляру
+---------------------------------------------------------------------------------------------------------------------------
+точка пересечения перпендикуляра и прямой
+Сначало находишь коефициенты уравнения прямой, проходящей через две данных точки:
+p1,p2 - точки прямой
+a1:=p1.y-p2.y;a1=runway_beg.lng-runway_stop.lng
+b1:=p2.x-p1.x; b1=runway_stop.lat-runway_beg.lat
+c1:=-(p1.x*a1+p1.y*b1);c1=-(runway_beg.lat*a1+runway_beg.lng*b1)
+Находим линию, которая проходит через заданную точку n и перпендикулярна линии, которая задается
+a1,b1,c1.
+a2:=b1;
+b2:=-a1;
+c2:=-(a1*n.x+b1*n.y);
+Находим пересечение двух прямых:
+x:=(c1*b2-c2*b1)/(a1*b2-a2*b1);
+y:=(a1*c2-a2*c1)/(a1*b2-a2*b1);
+===========================================================================================================================
+
+
+def glis_point(runway_beg, runway_stop, dist):
+  #runway_beg  -- координаты края впп на которую производится посадка
+  #runway_stop -- координаты дальнего края впп в направлении которого идет пробежка после касания
+  #dist        -- дистанция выноса точки глиссады
+  dist_t = dist/(math.sqrt(((runway_beg.lat - runway_stop.lat)**2)+((runway_beg.lng - runway_stop.lng)**2))*10471.97333333)
+  glis_dot = coordinates(name='glis_point', lat=(runway_beg.lat+dist_t*(runway_beg.lat-runway_stop.lat)), lng=(runway_beg.lng+dist_t*(runway_beg.lng-runway_stop.lng)), alt=(dist*0.1)+70.0)
+  return glis_dot
+
+def dist_to_line(runway_beg, runway_stop, curr_point):
+  #расчет растояния от текущей координаты до прямой заданной 2 точками по перпендикуляру
+  #runway_beg  -- координаты края впп на которую производится посадка
+  #runway_stop -- координаты дальнего края впп в направлении которого идет пробежка после касания
+  #curr_point  -- текущие координаты
+  point_dist=((runway_beg.lng-runway_stop.lng)*curr_point.lat+(runway_stop.lat-runway_beg.lat)*curr_point.lng+(runway_beg.lat*runway_stop.lng-runway_stop.lat*runway_beg.lng))/math.sqrt(((runway_beg.lng-runway_stop.lng)**2)+((runway_stop.lat-runway_beg.lat)**2))
+  return point_dist*10471.97333333
+
+def dist_from_line(runway_beg, runway_stop, curr_point):
+  cf=((curr_point.lat-runway_beg.lat)*(runway_stop.lat-runway_beg.lat)+(curr_point.lng-runway_beg.lng)*(runway_stop.lng-runway_beg.lng))/((runway_beg.lat-runway_stop.lat)**2+(runway_beg.lng-runway_stop.lng)**2)
+  pp_x=runway_beg.lat+cf*(runway_stop.lat-runway_beg.lat)
+  pp_y=runway_beg.lng+cf*(runway_stop.lng-runway_beg.lng)
+  print pp_x," ",pp_y
+  return math.sqrt(((runway_beg.lat - pp_x)**2)+((runway_beg.lng - pp_y)**2))*10471.97333333
+
+def dist_from_line_deg(runway_beg, runway_stop, curr_point):
+  cf=((curr_point.lat-runway_beg.lat)*(runway_stop.lat-runway_beg.lat)+(curr_point.lng-runway_beg.lng)*(runway_stop.lng-runway_beg.lng))/((runway_beg.lat-runway_stop.lat)**2+(runway_beg.lng-runway_stop.lng)**2)
+  pp_x=runway_beg.lat+cf*(runway_stop.lat-runway_beg.lat)
+  pp_y=runway_beg.lng+cf*(runway_stop.lng-runway_beg.lng)
+  return math.sqrt(((runway_beg.lat - pp_x)**2)+((runway_beg.lng - pp_y)**2))
+
+def dog_curves_point(runway_beg, runway_stop, curr_point):
+  #получение координат точки для так называемой собачьей дуги 
+  #runway_beg  -- координаты края впп на которую производится посадка
+  #runway_stop -- координаты дальнего края впп в направлении которого идет пробежка после касания
+  #curr_point  -- текущие координаты
+  d=dist_from_line_deg(runway_beg, runway_stop, curr_point)/2
+  res = glis_point(runway_beg, runway_stop, d)
+  return res
+ 
+
+x0=1
+y0=5
+x1=1
+y1=8
+t=1
+x=x0+t*(x1-x0)
+y=y0+t*(y1-y0)
+x:1
+y:8
+
+x0=1
+y0=5
+x1=1
+y1=8
+t=0.5
+x=x0+t*(x1-x0)
+y=y0+t*(y1-y0)
+x:1
+y:11
+
+x0=1
+y0=5
+x1=1
+y1=8
+t=3
+x=x0+t*(x1-x0)
+y=y0+t*(y1-y0)
+x:1
+y:14
+
+x0=1
+y0=5
+x1=1
+y1=8
+t=10
+x=x0+t*(x1-x0)
+y=y0+t*(y1-y0)
+x:1
+y:35
+
+x0=-0.04855056049336841
+y0=-74.72449313835466000
+x1=-0.05022509861205912
+y1=-74.48951284451766242
+t=5
+x=x0+t*(x1-x0)
+y=y0+t*(y1-y0)
+x
+y
+
+
+
+
+
+
+
