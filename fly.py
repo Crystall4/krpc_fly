@@ -3,19 +3,20 @@
 
 import sys
 sys.path.append("./lib")
+import importlib
 from tools import *
 
 import math
 import krpc
 import time
 import pid
-import importlib
 
-#======================================================================================================================
-# импорт модуля ЛА
-airc_str='Aeris_4A_atmos'
+
+
+#airc_str='Aeris_4A_atmos'
 sys.path.append("./aircrafts")
-globals().update(importlib.import_module(airc_str).__dict__)
+#globals().update(importlib.import_module(airc_str).__dict__)
+
 
 #======================================================================================================================
 #импорт модулей ВПП
@@ -26,58 +27,96 @@ vpp_str='iceland'
 globals().update(importlib.import_module(vpp_str).__dict__)
 
 
-type_flight={0:"TakeOff and Landing",1:"Landing to",2:"TakeOff From",3:"Cruise and Landing",4:"TakeOff and Cruise"}
-
+type_flight={0:"TakeOff and Landing", 1:"Landing to", 2:"TakeOff From", 3:"Cruise and Landing", 4:"TakeOff and Cruise"}
+type_point ={0:"VPP", 1:"unequipped runway", 2:"Water", 3:"Space", 4:"Waypoint"}
 
 
 
 
 class fly_plan:
-	flight_name = ''
-	aircraft    = None
-	begin       = None
-	end         = None
-	SID         = None
-	STAR        = None
-	route       = []
-	
+	aircraft_name = None
+	begin_name    = None
+	end_name      = None
+	flight_name   = ''
+	aircraft      = None
+	begin         = None
+	end           = None
+	SID           = None
+	STAR          = None
+	route         = []
+	def plan_compile(self):
+		result=False
+		if self.aircraft_name != None:
+			try:
+				#======================================================================================================================
+				# импорт модуля ЛА
+				globals().update(importlib.import_module(self.aircraft_name).__dict__)
+				if basic_aircraft != None :
+					self.aircraft = basic_aircraft
+					log("Аппарат "+self.aircraft_name+" подключен успешно")
+					result = True
+			except:
+				log("подключение эиркрафта неудачно")
+			finally:
+				pass
+		if self.begin_name != None:
+			
+		return result
+
+
 
 class fly_ap:
+	
 	def __init__(self, flplan):
-		self.AtDeg    = 0.0
-		self.name     = flplan.flight_name
-		self.aircraft = flplan.aircraft
-		self.maxAtDeg = self.aircraft.maxAtDeg
-		self.minAtDeg = self.aircraft.minAtDeg
-		self.minVERTICALSPEED  = self.aircraft.minVERTICALSPEED
-		self.maxVERTICALSPEED  = self.aircraft.maxVERTICALSPEED
-		self.workVERTICALSPEED = self.aircraft.workVERTICALSPEED
-		self.tALTITUDE = 1000.0
-		self.tsleep    = 0.3
-		self.CruiseSpeed = self.aircraft.CruiseSpeed
-		self.TrottlePid  = pid.AviaPID(self.aircraft.TrottleKp,self.aircraft.TrottleKi,self.aircraft.TrottleKd) 
-		self.headingPid  = pid.AviaPID(self.aircraft.headingKp,self.aircraft.headingKi,self.aircraft.headingKd, -7, 7)
-		#-------------------------------------------------------------------------------------------------------------
-		# Connect to the server with the default settings
-		# (IP address 127.0.0.1 and port 50000)
-		log('Connecting to server...')
-		self.ksp = krpc.connect(name=self.name)
-		print 'Connected to server, version', self.ksp.krpc.get_status().version
-		
-		self.space_center = self.ksp.space_center
-		self.vessel       = self.space_center.active_vessel
-		self.orbit        = self.vessel.orbit
-		self.ap           = self.vessel.auto_pilot
-		self.control      = self.vessel.control
-		self.flight       = self.vessel.flight()
-		self.surf_flight  = self.vessel.flight(self.orbit.body.reference_frame)
-		self.resources    = self.vessel.resources
-		self.aircraft.krpc_disp = self.vessel
-		#-------------------------------------------------------------------------------------------------------------
-		self.file_log    = False
-		self.console_log = True
-		self.old_met     = self.vessel.met
-
+		self.status = "PreInit"
+		self.flplan   = flplan
+		if self.flplan.plan_compile():
+			self.name     = flplan.flight_name
+			self.aircraft = flplan.aircraft
+			self.AtDeg    = 0.0
+			self.maxAtDeg = self.aircraft.maxAtDeg
+			self.minAtDeg = self.aircraft.minAtDeg
+			self.minVERTICALSPEED  = self.aircraft.minVERTICALSPEED
+			self.maxVERTICALSPEED  = self.aircraft.maxVERTICALSPEED
+			self.workVERTICALSPEED = self.aircraft.workVERTICALSPEED
+			self.tALTITUDE = 1000.0
+			self.tsleep    = 0.3
+			self.CruiseSpeed = self.aircraft.CruiseSpeed
+			self.TrottlePid  = pid.AviaPID(self.aircraft.TrottleKp,self.aircraft.TrottleKi,self.aircraft.TrottleKd)
+			self.headingPid  = pid.AviaPID(self.aircraft.headingKp,self.aircraft.headingKi,self.aircraft.headingKd, -7, 7)
+			self.krpc_connection()
+			self.file_log    = False
+			self.console_log = True
+			self.old_met     = self.vessel.met
+			self.status = "Ok"
+		else:
+			self.status = "Failed"
+	
+	def krpc_connection(self):
+		result = False
+		try:
+			#-------------------------------------------------------------------------------------------------------------
+			# Connect to the server with the default settings
+			# (IP address 127.0.0.1 and port 50000)
+			log('Connecting to server...')
+			self.ksp = krpc.connect(name=self.name)
+			#-------------------------------------------------------------------------------------------------------------
+		except:
+			log("Ошибка подключения к KRPC")
+		else:
+			print 'Connected to server, version', self.ksp.krpc.get_status().version
+			self.space_center = self.ksp.space_center
+			self.vessel       = self.space_center.active_vessel
+			self.orbit        = self.vessel.orbit
+			self.ap           = self.vessel.auto_pilot
+			self.control      = self.vessel.control
+			self.flight       = self.vessel.flight()
+			self.surf_flight  = self.vessel.flight(self.orbit.body.reference_frame)
+			self.resources    = self.vessel.resources
+			self.aircraft.krpc_disp = self.vessel
+			result = True
+		return result
+			
 	def pre_fly(self):
 		self.aircraft.pre_fly()
 		self.ap.max_roll_speed = 0.5
@@ -155,6 +194,7 @@ class fly_ap:
 		self.control.lights = False
 		for d in self.SID[1:]:
 			self.climb(d.alt,d)
+	
 	def climb(self,alt=1000,targetDot=''):
 		state = "Climb up to "+alt
 		self.maxTrottle = self.aircraft.ClimbTrottle

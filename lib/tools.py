@@ -3,7 +3,6 @@
 import math
 import time
 
-
 def sec_to_time(sec):
 	if sec>86400: print time.strftime('%d дней %H:%M:%S',time.gmtime(sec))
 	else: print time.strftime('%H:%M:%S',time.gmtime(sec))
@@ -142,6 +141,7 @@ def dog_curves_point(runway_beg, runway_stop, curr_point):
 log_level=5
 log_file='log/debug'
 lf = None
+
 def log(string_logging,level=5):
 	if log_level >= level:
 		print string_logging

@@ -1,5 +1,7 @@
 #! /usr/bin/env python2
 # -*- coding: utf-8 -*-
+import sys
+import importlib
 import fly
 
 #======================================================================================================================
@@ -17,9 +19,10 @@ vpp_str='iceland'
 globals().update(importlib.import_module(vpp_str).__dict__)
 
 flplan          = fly.fly_plan()
-flplan.aircraft = Aeris_4A_atmos
-flplan.begin    = KSC_VPP
-flplan.end      = iceland_VPP
+flplan.aircraft_name = 'Aeris_4A_atmos'
+flplan.begin_name    = "KSC_VPP"
+flplan.end_name      = "iceland_VPP"
+
 
  
 testap = fly.fly_ap(flplan)

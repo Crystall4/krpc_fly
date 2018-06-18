@@ -47,6 +47,9 @@ class Aircraft:
 		
 	def pre_take_off(self,VPP,First_dot):
 		return True
+	
+	def append_engines(self):
+		return False
 		
 	def start_engines(status):
 		return False

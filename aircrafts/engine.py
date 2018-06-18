@@ -5,8 +5,8 @@ from tools import *
 
 class engine_mode:
 	modes            = {0:"Off",1:"warm-up",2:"TakeOff mode",3:"Cruise mode",4:"Landing mode",5:"Forsage maneur mode",6:"Emergency mode"}
-	statuses         = {0:"eq target mode", 1:"transient mode", 2:"pre transient mode" 3:"emergency mode", 4:"emergency off"}
-	emergency_causes = {0:"not emergency" 1:"no fuel", 2:"other"}
+	statuses         = {0:"eq target mode", 1:"transient mode", 2:"pre transient mode", 3:"emergency mode", 4:"emergency off"}
+	emergency_causes = {0:"not emergency", 1:"no fuel", 2:"other"}
 	emergency_cause  = 0
 	pre_mode         = 0
 	target_mode      = 0
@@ -23,7 +23,7 @@ class engine:
 	
 	def __init__(self, pengine=None):
 		result = False
-		if pengine.part. != None:
+		if pengine.part != None:
 			self.krpc_engine = pengine
 			result=True
 		return result
@@ -42,6 +42,7 @@ class engine:
 	def start_test(self):
 		result=False
 		return result
+
 	def set_mode(self, tmode):
 		if self.mode.status == 0:
 			if self.mode.target_mode == 0 and self.start_test():
@@ -63,7 +64,7 @@ class engine:
 
 class engines:
 	krpc_disp = None
-	mode = engines_mode()
+	mode = engine_mode()
 	aengines = []
 	
 	def __init__(self, krpc_disp=None):

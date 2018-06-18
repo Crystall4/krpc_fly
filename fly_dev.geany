@@ -26,7 +26,7 @@ current_page=3
 FILE_NAME_0=49;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Ffly.py;0;4
 FILE_NAME_1=791;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Ffly_light_KSC_to_iceland_obj.py;0;4
 FILE_NAME_2=617;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Faircrafts%2Faircraft.py;0;4
-FILE_NAME_3=1303;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Faircrafts%2Fengine.py;0;4
+FILE_NAME_3=645;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Faircrafts%2Fengine.py;0;4
 FILE_NAME_4=3272;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Frunways%2Frunway.py;0;4
 FILE_NAME_5=452;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Flib%2Ftools.py;0;4
 FILE_NAME_6=273;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Faircrafts%2FAeris_4A_atmos.py;0;4
@@ -34,7 +34,7 @@ FILE_NAME_7=3010;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1
 FILE_NAME_8=672;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Frunways%2Ficeland.py;0;4
 FILE_NAME_9=0;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Fnp%2Fmc.py;0;4
 FILE_NAME_10=7058;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2F1.3.0.1804%2F2%2Fsaves%2FНовая%20игра%2FShips%2FSPH%2FЭрис%204A%20atmo.craft;0;4
-FILE_NAME_11=504;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Ftest.py;0;4
+FILE_NAME_11=2751;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Ftest.py;0;4
 
 [VTE]
 last_dir=/media/crystall4/7b7b485f-2e41-43a1-b45c-7b2915c1bc84/crystall4home/1/ksp-krpc/fly_dev

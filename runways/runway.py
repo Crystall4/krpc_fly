@@ -80,7 +80,7 @@ class VPP:
 	edge1 = ''
 	edge2 = ''
 	zones=[]
-	def __init__(self, edge1, edge2, ;zones=[]):
+	def __init__(self, edge1, edge2, zones=[]):
 		self.edge1=edge1
 		self.edge2=edge2
 		self.zones=zones
