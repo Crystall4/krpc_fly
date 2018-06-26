@@ -28,10 +28,12 @@ globals().update(importlib.import_module(vpp_str).__dict__)
 
 
 type_flight={0:"TakeOff and Landing", 1:"Landing to", 2:"TakeOff From", 3:"Cruise and Landing", 4:"TakeOff and Cruise"}
-type_point ={0:"VPP", 1:"unequipped runway", 2:"Water", 3:"Space", 4:"Waypoint"}
+type_point ={0:"VPP", 1:"unequipped runway", 2:"Water", 3:"Space", 4:"Waypoint", 5:"Point", 6:"Zone"}
 
 
-
+class route_stage:
+	stage_type = None
+	stage_data = None
 
 class fly_plan:
 	aircraft_name = None
@@ -60,10 +62,15 @@ class fly_plan:
 			finally:
 				pass
 		if self.begin_name != None:
-			
+			pass
+		#=============================================================================================================
+		# Построение пути полета
+		if self.begin.stage_type == 0:
+			if len(self.route) > 0:
+				pass
+			elif self.flplan.end.stage_type == 0:
+				tp = self.flplan.end.stage_data
 		return result
-
-
 
 class fly_ap:
 	
@@ -113,12 +120,10 @@ class fly_ap:
 			self.flight       = self.vessel.flight()
 			self.surf_flight  = self.vessel.flight(self.orbit.body.reference_frame)
 			self.resources    = self.vessel.resources
-			self.aircraft.krpc_disp = self.vessel
 			result = True
-		return result
-			
+		return result			
 	def pre_fly(self):
-		self.aircraft.pre_fly()
+		self.aircraft.pre_fly(self.vessel)
 		self.ap.max_roll_speed = 0.5
 		self.ap.roll_speed_multiplier = 0.5
 		#self.ap.set_pid_parameters(75,50,25)
@@ -126,7 +131,7 @@ class fly_ap:
 		self.ap.rotation_speed_multiplier = 1
 		self.ap.engage()
 	def calc_VerticalSpeed(self):
-		self.TVertSpeed=(self.tALTITUDE-self.flight.mean_altitude)/abs((self.tLATLONG.dist_line()-(self.tLATLONG.dist_line()*0.1))/self.surf_flight.horizontal_speed)
+		self.TVertSpeed=(self.tALTITUDE-self.flight.mean_altitude)/abs((self.tLATLONG.dist_line(self.aircraft.curr_position())-(self.tLATLONG.dist_line(self.aircraft.curr_position())*0.1))/self.surf_flight.horizontal_speed)
 		return self.TVertSpeed
 	def calc_AtDeg(self):
 		self.AtDeg = self.AtDeg + (((self.TVertSpeed*self.aircraft.dVERTICALSPEED) - self.surf_flight.vertical_speed)/self.aircraft.KVERTSPEED)
@@ -135,7 +140,7 @@ class fly_ap:
 		if self.AtDeg < self.minAtDeg:
 			self.AtDeg = self.minAtDeg
 	def calc_Heading_and_Roll(self):
-		 t=self.tLATLONG.bearing_line()-self.flight.heading
+		 t=self.tLATLONG.bearing_line(self.aircraft.curr_position())-self.flight.heading
 		 self.tHeading = self.flight.heading
 		 if t>360:
 		   t=t-360
@@ -165,7 +170,7 @@ class fly_ap:
 		self.control.wheel_steering = 0
 		self.SID=VPP.get_SID(First_dot)
 		self.tLATLONG = self.SID[0]
-		self.ap.target_pitch_and_heading(0.45, self.tLATLONG.bearing_line())
+		self.ap.target_pitch_and_heading(0.45, self.tLATLONG.bearing_line(self.aircraft.curr_position()))
 	def take_off(self,VPP,First_dot):
 		self.pre_take_off(VPP)
 		self.aircraft.start_engines()
@@ -181,20 +186,19 @@ class fly_ap:
 		#print 'Probeg'
 		self.control.brakes = False
 		while self.surf_flight.speed < self.aircraft.landingspeed() and self.surf_flight.surface_altitude < 10:
-			self.ap.target_pitch_and_heading(0.45, self.tLATLONG.bearing_line())
+			self.ap.target_pitch_and_heading(0.45, self.tLATLONG.bearing_line(self.aircraft.curr_position()))
 			self.vessel.auto_pilot.target_roll = 0
 			time.sleep(0.1)
 		#print 'Otrblv'
 		self.control.toggle_action_group(9)
 		while surf_flight.surface_altitude < 15:
-			self.ap.target_pitch_and_heading(3.0, self.tLATLONG.bearing_line())
+			self.ap.target_pitch_and_heading(3.0, self.tLATLONG.bearing_line(self.aircraft.curr_position()))
 			self.vessel.auto_pilot.target_roll = 0
 			time.sleep(0.1)
 		self.control.gear = False
 		self.control.lights = False
 		for d in self.SID[1:]:
 			self.climb(d.alt,d)
-	
 	def climb(self,alt=1000,targetDot=''):
 		state = "Climb up to "+alt
 		self.maxTrottle = self.aircraft.ClimbTrottle
@@ -224,10 +228,10 @@ class fly_ap:
 		self.control.gear = True
 		self.control.lights = True
 		while state != 'END':
-			if state == 'Runway' and self.tLATLONG.dist_line() < 150:
+			if state == 'Runway' and self.tLATLONG.dist_line(self.aircraft.curr_position()) < 150:
 				state = 'Glissada'
 				self.tLATLONG = end_r
-				self.tALTITUDE = beg_r.alt+((self.aircraft.RunwayHill/2)*self.tLATLONG.dist_line()/150)
+				self.tALTITUDE = beg_r.alt+((self.aircraft.RunwayHill/2)*self.tLATLONG.dist_line(self.aircraft.curr_position())/150)
 				self.TrottlePid.setPoint(0.1)
 				self.maxTrottle = 0.1
 				self.minTrottle = 0.1
@@ -235,7 +239,7 @@ class fly_ap:
 				self.control.brakes = True
 			if state == 'Glissada' and surf_flight.surface_altitude < 5:
 				self.tALTITUDE = beg_r.alt-20
-				#print 'Kasanie', tLATLONG.dist_line() 
+				#print 'Kasanie', tLATLONG.dist_line(self.aircraft.curr_position()) 
 				self.TrottlePid.setPoint(20)
 				self.maxTrottle = 0.000000000000000
 				self.minTrottle = 0.000000000000000
@@ -254,16 +258,16 @@ class fly_ap:
 	def turn(self,targetDot):
 		self.maxTrottle = 1.0
 		state = "Turn from {}".format(targetDot.name)
-		while abs(self.targetDot.bearing_line()-self.flight.heading)>10.0:
-			memo = str(self.targetDot.bearing_line()-self.flight.heading)
+		while abs(self.targetDot.bearing_line(self.aircraft.curr_position())-self.flight.heading)>10.0:
+			memo = str(self.targetDot.bearing_line(self.aircraft.curr_position())-self.flight.heading)
 			self.run(state,memo)
 	def Cruise(self,targetDot,dist=500):
 		state = "Cruise to {}".format(targetDot.name)
 		self.tLATLONG = targetDot
 		self.tALTITUDE = targetDot.alt
 		self.TrottlePid.setPoint(self.aircraft.CruiseSpeed)
-		while targetDot.dist_line() < dist :
-			self.run(state,"estimated flight times: {}".format(sec_to_time(targetDot.dist_line()/(self.surf_flight.horizontal_speed+0.0000000000001))))
+		while targetDot.dist_line(self.aircraft.curr_position()) < dist :
+			self.run(state,"estimated flight times: {}".format(sec_to_time(targetDot.dist_line(self.aircraft.curr_position())/(self.surf_flight.horizontal_speed+0.0000000000001))))
 	def log(self):
 		self.log_file = open(self.log_fileName, 'a') 
 		self.log_file.writeln(self.name +" "+ self.vessel.met)
@@ -286,10 +290,10 @@ class fly_ap:
 			TVertSpeed  	=format(self.TVertSpeed,'+.3f'),\
 			vertical_speed	=format( self.surf_flight.vertical_speed,'+.3f'),\
 			AtRoll			=format( self.AtRoll,'+.3f'),\
-			bearing			=format(self.tLATLONG.bearing_line(),'.3f'),\
+			bearing			=format(self.tLATLONG.bearing_line(self.aircraft.curr_position()),'.3f'),\
 			tHeading		=format( self.tHeading,'.3f'),\
 			tALTITUDE		=format( self.tALTITUDE,'.1f'),\
-			dist_line		=format(  self.tLATLONG.dist_line(),'.1f'),\
+			dist_line		=format(  self.tLATLONG.dist_line(self.aircraft.curr_position()),'.1f'),\
 			landingspeed	=format( self.aircraft.landingspeed(),'.3f'))\
 			+memo
 		if self.file_log:
@@ -303,7 +307,7 @@ class fly_ap:
 		self.calc_VerticalSpeed()
 		self.calc_AtDeg()
 		self.calc_Heading_and_Roll()
-		if surf_flight.horizontal_speed<(self.aircraft.landingspeed()*1.05) :
+		if surf_flight.horizontal_speed<(self.aircraft.landingspeed()*1.05):
 			control.toggle_action_group(9)
 		else:
 			control.toggle_action_group(0)
@@ -315,6 +319,8 @@ class fly_ap:
 		control.throttle = self.TTrottle
 		self.state_log(state,memo)
 		time.sleep(self.tsleep)
-		
+	def Go(self):
+		if len(self.route) > 0:
+			self.take_off(self.flplan.begin.stage_data,self.flplan.route[0].stage_data)
 
 
