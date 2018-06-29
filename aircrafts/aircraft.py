@@ -5,7 +5,7 @@ aircraft_status = {0:"Off",1:"warm-up",2:"TakeOff mode",3:"Cruise mode",4:"Landi
 		
 class Aircraft:
 	name                = ""
-	krpc_disp           = None
+	krpc_vessel         = None
 	maxAtDeg            = 5.0
 	minAtDeg            = -7.0
 	minVERTICALSPEED    = -10.0
@@ -35,6 +35,9 @@ class Aircraft:
 	ClimbMinPitch       = 1.0
 	ClimbTrottle        = 0.75
 	engines             = None
+	#distance from the turn point to the beginning of the glide path
+	pgt_distance        = 20000
+
 	
 	def __init__(self):
 		self.name = ""
@@ -42,7 +45,11 @@ class Aircraft:
 	def landingspeed(self):
 		return self.landingspeed0+(self.landingspeed0*(((vessel.mass-self.mass0)/self.mass0)/self.Klandingspeed))
 	
-	def pre_fly(self):
+	def pre_fly(self,krpc_vessel=None):
+		result = False
+		if krpc_vessel != None:
+			self.krpc_vessel = krpc_vessel
+			self.krpc_flight = krpc_vessel.flight()
 		return True
 		
 	def pre_take_off(self,VPP,First_dot):
@@ -51,7 +58,10 @@ class Aircraft:
 	def append_engines(self):
 		return False
 		
-	def start_engines(status):
+	def start_engines(self,status):
 		return False
-		
+	
+	def curr_position(self):
+		return coordinates(name='CP', lat=self.krpc_flight.latitude, lng=self.krpc_flight.longitude, alt=self.krpc_flight.surface_altitude)
+
 

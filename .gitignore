@@ -1,2 +1,4 @@
 *.pyc
 ../**/*.pyc
+geany*.sh
+../**/geany*.sh

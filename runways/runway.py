@@ -3,16 +3,16 @@
 import math
 import sys
 sys.path.append("../lib")
-import tools
-coordinates = tools.coordinates
+from tools import *
 
-#=====================================================================================================================  
+
+#======================================================================================================================
 
 
 #---------------------------------------------------------------------------------------------------------------------
 recursive_dot  = coordinates(name='recursive_dot', lat=-0.02022509861205912, lng=-72.18951284451766242, alt=1000.0)
-recursive_dot1 = coordinates(name='recursive_dot', lat=-0.02022509861205912, lng=-76.18951284451766242, alt=600.0 )
-two_dot        = coordinates(name='two_dot',        lat=1.35022509861205912,  lng=-70.48951284451766242, alt=1000.0)
+recursive_dot1 = coordinates(name='recursive_dot', lat=-0.02022509861205912, lng=-76.18951284451766242, alt= 600.0)
+two_dot        = coordinates(name='two_dot',       lat= 1.35022509861205912, lng=-70.48951284451766242, alt=1000.0)
 #======================================================================================================================
 
 class radialZone:
@@ -39,7 +39,7 @@ class radialZone:
 			self.status_TakeOff=status_TakeOff
 			self.status_Landing=status_Landing
 			self.zone_center =zone_center
-			self.zone_center.name = '"'+name +'" zone center'
+			#self.zone_center.name = '"'+name +'" zone center'
 			subzones.sort()
 			self.subzones=subzones
 			self.TakeOff_beg_detour=TakeOff_beg_detour
@@ -54,59 +54,89 @@ class radialZone:
 		else:
 			print "Error create zone"
 	def check_belonging_bearing(self,bearing):
-		return (bearing>beg_deg and bearing<end_deg)
+		return (bearing>self.beg_deg and bearing<self.end_deg)
 	def check_belonging_dot(self,coord):
 		bearing=coord.bearing_line_from(self.zone_center)
 		return (bearing>beg_deg and bearing<end_deg and coord.dist_line_from(self.zone_center)<self.subzones[len(self.subzones)-1])
 	def get_TakeOff_route(self,bearing):
+		route = []
 		sh=0
-		if status_TakeOff!=True and ((bearing-beg_deg)<(end_deg-bearing)):
-			situation_route = TakeOff_beg_detour
-		elif status_TakeOff!=True and ((bearing-beg_deg)>(end_deg-bearing)):
-			situation_route = TakeOff_end_detour
+		if self.status_TakeOff!=True and ((bearing-self.beg_deg)<(self.end_deg-bearing)):
+			situation_route = self.TakeOff_beg_detour
+		elif self.status_TakeOff!=True and ((bearing-self.beg_deg)>(self.end_deg-bearing)):
+			situation_route = self.TakeOff_end_detour
 		else: situation_route = TakeOff_main_route
 		for i in situation_route:
 			if i > 360.0 :
-				dot=target_dot_from_dist_and_bear(bearing,subzones[sh])
+				dot=self.zone_center.target_dot_from_dist_and_bear(bearing,self.subzones[sh])
 			else:
-				dot=target_dot_from_dist_and_bear(i,subzones[sh])
-			dot.name="SID"+(sh+1)+"from "+self.name+" zone"
-			dot.alt=TakeOff_subzones_alt[sh]
+				dot=self.zone_center.target_dot_from_dist_and_bear(i,self.subzones[sh])
+			dot.name="SID "+str(sh+1)+" from "+self.name+" zone"
+			dot.alt=self.TakeOff_subzones_alt[sh]
 			route.append(dot)
 			sh+=1
 		return tuple(route)
 
+
+class vpp_bearing:
+	name  = ''
+	VPP   = None
+	edge1 = None
+	edge2 = None
+	def __init__(self, name='Unknown', edge1=None, edge2=None):
+		self.name  = name
+		self.edge1 = edge1
+		self.edge2 = edge2
+	def get_distance(self,CP):
+		self.edge1.dist_line(CP)
+
+
 class VPP:
-	edge1 = ''
-	edge2 = ''
-	zones=[]
-	def __init__(self, edge1, edge2, zones=[]):
-		self.edge1=edge1
-		self.edge2=edge2
+	vpp_bearings = None
+	zones = None
+	
+	def __init__(self, vpp_bearings, zones):
+		self.vpp_bearings = vpp_bearings
 		self.zones=zones
-	def get_SID(self,target):
+
+	def get_bear(self, coord):
+		#Получить направление захода/выхода
+		result = self.vpp_bearings[0]
+		if self.vpp_bearings[0].edge1.dist_line(coord) > self.vpp_bearings[1].edge1.dist_line(coord):
+			result=self.vpp_bearings[0]
+		else:
+			result=self.vpp_bearings[1]
+		return result
+		
+	def get_SID(self,target,CP):
 		#Получение схемы выхода из зоны ВПП
 		#SID1:Дальний край ВПП
 		#--------------SID1
-		if  self.edge1.dist_line() > self.edge2.dist_line():
-			self.SID1 = self.edge1
-		else:
-			self.SID1 = self.edge2
+		max_dist_bear=0.0
+		bear=self.get_bear(CP)
+		SID1=bear.edge1
+		for bear in self.vpp_bearings:
+			td = bear.get_distance(CP)
+			if td > max_dist_bear:
+				max_dist_bear = td
+				SID1 = bear.edge1
+				log(SID1)
 		
 		bearing_Z=target.bearing_line_from(SID1)
 		zone=''
 		for nz in self.zones:
-			if nz.check_belonging_bearing(bearing): zone=nz
-		if zone.status_take_off:
+			if nz.check_belonging_bearing(bearing_Z): zone=nz
+		if zone.status_TakeOff:
 			route=zone.get_route(bearing)
 		else:
-			route=zone.get_detour_route(bearing)
+			route=zone.get_TakeOff_route(bearing_Z)
 		#--------------SID2
 		SID=[SID1,]
 		for r in route:
 			SID.append(r)
-
-		return tuple(SID)			
+		
+		return tuple(SID)	
+				
 	def get_STAR(self,coord):
 		#Получение схемы подхода к ВПП
 		if self.edge1.dist_line() < self.edge2.dist_line():
@@ -117,12 +147,31 @@ class VPP:
 			#print "Sit to", beg_r.name," direction runway"
 			beg_r = self.edge2
 			end_r = self.edge1
+			
+		return tuple(SID)
+			
+	def get_STAR_from(self,coord, get_vpp_bear=None):
+		#Получение схемы подхода к ВПП
+		if get_vpp_bear==None:
+			pass
+			#if self.edge1.dist_line_from(coord) < self.edge2.dist_line_from(coord):
+				##print "Sit to East direction runway"
+				#beg_r = self.edge1
+				#end_r = self.edge2
+			#else:
+				##print "Sit to", beg_r.name," direction runway"
+				#beg_r = self.edge2
+				#end_r = self.edge1
+		else:
+			pass
+		 
+		STAR=[]
+		
+		return tuple(STAR)
+		
 	def glis_point(runway_beg, runway_stop, dist=12000):
 		dist_t = dist/(math.sqrt(((runway_beg.lat - runway_stop.lat)**2)+((runway_beg.lng - runway_stop.lng)**2))*10471.97333333)
 		glis_dot = coordinates(name='glis point from '+runway_beg.name, lat=(runway_beg.lat+dist_t*(runway_beg.lat-runway_stop.lat)), lng=(runway_beg.lng+dist_t*(runway_beg.lng-runway_stop.lng)), alt=(dist*0.1)+70.0)
 		return glis_dot
-
-
-
 
 #======================================================================================================================

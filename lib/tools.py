@@ -3,6 +3,23 @@
 import math
 import time
 
+prch = [2,3,5,7,11,13,17,19,23,29,31,37,41]
+
+chisl={
+1 :{'int' :1,'str':'First',  'ru_str_f':'Первая'    ,'ru_str_m':'Первый'   ,'Rome':'I'   },
+2 :{'int' :2,'str':'Second', 'ru_str_f':'Вторая'    ,'ru_str_m':'Второй'   ,'Rome':'II'  },
+3 :{'int' :3,'str':'Third',  'ru_str_f':'Третья'    ,'ru_str_m':'Третий'   ,'Rome':'III' },
+4 :{'int' :4,'str':'Fourth', 'ru_str_f':'Четвертая' ,'ru_str_m':'Четвертый','Rome':'IV'  },
+5 :{'int' :5,'str':'Fifth',  'ru_str_f':'Пятая'     ,'ru_str_m':'Пятый'    ,'Rome':'V'   },    
+6 :{'int' :6,'str':'Sixth',  'ru_str_f':'Шестая'    ,'ru_str_m':'Шестой'   ,'Rome':'VI'  },
+7 :{'int' :7,'str':'Seventh','ru_str_f':'Седьмая'   ,'ru_str_m':'Седьмой'  ,'Rome':'VII' },
+8 :{'int' :8,'str':'Eighth', 'ru_str_f':'Восьмая'   ,'ru_str_m':'Восьмой'  ,'Rome':'VIII'},
+9 :{'int' :9,'str':'Ninth',  'ru_str_f':'Девятая'   ,'ru_str_m':'Девятый'  ,'Rome':'IX'  },
+10:{'int':10,'str':'Tenth',  'ru_str_f':'Десятая'   ,'ru_str_m':'Десятый'  ,'Rome':'X'   }
+}
+
+
+
 def sec_to_time(sec):
 	if sec>86400: print time.strftime('%d дней %H:%M:%S',time.gmtime(sec))
 	else: print time.strftime('%H:%M:%S',time.gmtime(sec))
@@ -28,17 +45,17 @@ class coordinates:
   self.lng=lng
   self.name=name
   self.alt=alt
- def dist_deg(self):
-  return math.sqrt(((self.lat - flight.latitude)**2)+((self.lng - flight.longitude)**2))
- def dist_line(self):
-  return math.sqrt(((self.lat - flight.latitude)**2)+((self.lng - flight.longitude)**2))*10471.97333333
+ def dist_deg(self, CP):
+  return math.sqrt(((self.lat - CP.lat)**2)+((self.lng - CP.lng)**2))
+ def dist_line(self,CP):
+  return math.sqrt(((self.lat - CP.lat)**2)+((self.lng - CP.lng)**2))*10471.97333333
  def dist_line_from(self,from_dot):
 	 return math.sqrt(((self.lat - from_dot.lat)**2)+((self.lng - from_dot.lng)**2))*10471.97333333
- def dist_gc(self):
+ def dist_gc(self,CP):
   rad = 600000
-  lat1 = flight.latitude*math.pi/180.
+  lat1 = CP.lat*math.pi/180.
   lat2 = self.lat*math.pi/180.
-  long1 = flight.longitude*math.pi/180.
+  long1 = CP.lng*math.pi/180.
   long2 = self.lng*math.pi/180.
   cl1 = math.cos(lat1)
   cl2 = math.cos(lat2)
@@ -51,11 +68,11 @@ class coordinates:
   x = sl1*sl2+cl1*cl2*cdelta
   ad = math.atan2(y,x)
   return ad*rad 
- def bearing_gc(self):
+ def bearing_gc(self,CP):
   rad = 600000
-  lat1 = flight.latitude*math.pi/180.
+  lat1 = CP.lat*math.pi/180.
   lat2 = self.lat*math.pi/180.
-  long1 = flight.longitude*math.pi/180.
+  long1 = CP.lng*math.pi/180.
   long2 = self.lng*math.pi/180.
   cl1 = math.cos(lat1)
   cl2 = math.cos(lat2)
@@ -73,9 +90,9 @@ class coordinates:
   z2 = - math.radians(z2)
   anglerad2 = z2 - ((2*math.pi)*math.floor((z2/(2*math.pi))) )  
   return (anglerad2*180.)/math.pi
- def bearing_line(self):
-	dX = (flight.longitude) - (self.lng) 
-	dY = (flight.latitude)  - (self.lat)
+ def bearing_line(self,CP):
+	dX = (CP.lng) - (self.lng) 
+	dY = (CP.lat)  - (self.lat)
 	dist = math.sqrt((dX**2) + (dY**2))
 	dXa = abs(dX)
 	beta = math.degrees(math.acos(dXa / dist))
@@ -138,9 +155,9 @@ def dog_curves_point(runway_beg, runway_stop, curr_point):
   res = glis_point(runway_beg, runway_stop, d)
   return res
 
-log_level=5
-log_file='log/debug'
-lf = None
+log_level= 5
+log_file = 'log/debug'
+lf       = None
 
 def log(string_logging,level=5):
 	if log_level >= level:
