@@ -11,8 +11,6 @@ import krpc
 import time
 import pid
 
-
-
 #airc_str='Aeris_4A_atmos'
 sys.path.append("./aircrafts")
 #globals().update(importlib.import_module(airc_str).__dict__)

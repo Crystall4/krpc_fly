@@ -128,5 +128,6 @@ dVERTICALSPEED = 1.2
 KVERTSPEED = 3
 AtDegDebug = 0
 AtDeg = 0
-
+CP= coordinates(name='Begin Position', lat=flight.latitude, lng=flight.longitude, alt=flight.mean_altitude)
+print CP
 
