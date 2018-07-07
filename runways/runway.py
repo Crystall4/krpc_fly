@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import socket
+import json
 import math
 import sys
 sys.path.append("../lib")
@@ -175,3 +177,31 @@ class VPP:
 		return glis_dot
 
 #======================================================================================================================
+class traffic_controller:
+	name=''
+	listen=''
+	port=''
+	status=''
+	def __init__(self, name, vpp, host='127.0.0.1',port=5001):
+		if name and vpp:
+			self.name=name
+			self.vpp=vpp
+		#try:
+			self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+			self.s.bind((host,port))
+			self.s.listen(1)
+		#except Exception:
+			#log('error open socket')
+			#self.status='Error'
+		#else:
+			#self.status='Listen'
+	def run(self):
+		try:
+			while True:
+				conn, addr = self.s.accept()
+				data = conn.recv(1024)
+				print 'client is at', addr , data
+				conn.send(data)
+		except BaseException:
+			conn.close()
+	

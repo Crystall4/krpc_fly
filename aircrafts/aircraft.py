@@ -5,6 +5,8 @@ aircraft_status = {0:"Off",1:"warm-up",2:"TakeOff mode",3:"Cruise mode",4:"Landi
 		
 class Aircraft:
 	name                = ""
+	bnamber_prefix      = ''
+	bnamber_postfix     = ''
 	krpc_vessel         = None
 	maxAtDeg            = 5.0
 	minAtDeg            = -7.0

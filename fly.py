@@ -34,6 +34,7 @@ class route_stage:
 	stage_data = None
 
 class fly_plan:
+	name=''
 	aircraft_name = None
 	begin_name    = None
 	end_name      = None
