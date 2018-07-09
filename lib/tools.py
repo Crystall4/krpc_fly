@@ -3,25 +3,26 @@
 import math
 import time
 import json
-
+import handbooks
 
 prch = [2,3,5,7,11,13,17,19,23,29,31,37,41]
-
+chisl={
+1 :{'int' :1,'str':'First',  'ru_str_f':'Первая'    ,'ru_str_m':'Первый'   ,'Rome':'I'   },
+2 :{'int' :2,'str':'Second', 'ru_str_f':'Вторая'    ,'ru_str_m':'Второй'   ,'Rome':'II'  },
+3 :{'int' :3,'str':'Third',  'ru_str_f':'Третья'    ,'ru_str_m':'Третий'   ,'Rome':'III' },
+4 :{'int' :4,'str':'Fourth', 'ru_str_f':'Четвертая' ,'ru_str_m':'Четвертый','Rome':'IV'  },
+5 :{'int' :5,'str':'Fifth',  'ru_str_f':'Пятая'     ,'ru_str_m':'Пятый'    ,'Rome':'V'   },    
+6 :{'int' :6,'str':'Sixth',  'ru_str_f':'Шестая'    ,'ru_str_m':'Шестой'   ,'Rome':'VI'  },
+7 :{'int' :7,'str':'Seventh','ru_str_f':'Седьмая'   ,'ru_str_m':'Седьмой'  ,'Rome':'VII' },
+8 :{'int' :8,'str':'Eighth', 'ru_str_f':'Восьмая'   ,'ru_str_m':'Восьмой'  ,'Rome':'VIII'},
+9 :{'int' :9,'str':'Ninth',  'ru_str_f':'Девятая'   ,'ru_str_m':'Девятый'  ,'Rome':'IX'  },
+10:{'int':10,'str':'Tenth',  'ru_str_f':'Десятая'   ,'ru_str_m':'Десятый'  ,'Rome':'X'   }
+}
 
 
 #тип сообщения, определяется по коду в m_type 
-type_message={
-0:{'name':'Ping','isLogging':False,'log_mess':'', 'isParammetric':False} #просто пинг для проверки
-1:{'name':'Hello','log_mess':'', 'isParammetric':False} #начало общения просто для проверки что получатель отвечает хоть как то)))
-}
-name_message={
-'Ping' :0
-'Hello':1
-'OK'   :2
-'Bad'  :3
-}
 
-#формат сырого сообщения pl-A4Aatm_142313:
+#формат сырого сообщения tuple('pl-A4Aatm_142313','tc-KSC_KSC1',1) или ('pl-A4Aatm_142313','tc-KSC_KSC1',1, 'param')
 #dict(
 	#sender, код отправителя, состоит из:
 		#1: 2х символов типа [
@@ -38,8 +39,10 @@ name_message={
 			#ro - поверхностный способный к движению и маневрированию объект, кроме самоходных баз,
 			#sh - космический или водный подвижный способный к маневрированию объект способный иметь экипаж,
 			#st - космическая база :-)]
-			#после котрых идет знак минус
-		#2: имя или бортовой номер составляемые для разных типов по собственным правилам(описаны в предыдущем пункте) и указымаемый при создании файла полета или берущиеся из ангара или задается вручную
+			#tc - диспетчер 
+				#название зоны контроля+ знак подчеркивания +мнемоническое имя роли(если есть)+приоритет(тип) в зоне контроля
+		#2:после котрых идет знак минус
+		#3: имя или бортовой номер составляемые для разных типов по собственным правилам(описаны в предыдущем пункте) и указымаемый при создании файла полета или берущиеся из ангара или задается вручную
 	#receiver, код получателя (продумать роутинг для релаев)
 	#m_type, код типа сообщения 
 	#param, параметры сообщения, не обязательно, наличие зависит от типа
@@ -52,25 +55,34 @@ class message:
 	m_name   = None #Имя сообщения при получении берется из type_message.name при создании из параметров self.create_message()
 	param    = None #не обязательны, зависит от типа сообщения
 	control  = None #статус проверки по контрольной сумме, расчитывается при создании сообщения по json строке сырого сообщения без контрольной суммы при парсинге по ней проверяется корректность получения сообщения
+	def __str__(self):
+		if handbooks.type_message.get(self.m_type).get('isParammetric'):
+			return 'Messages From: {}, To: {}, Message: {} {}'.format(self.sender, self.receiver, self.m_name.get('name'), self.param)
+		else:
+			return 'Messages From: {}, To: {}, Message: {}'.format(self.sender, self.receiver, self.m_name.get('name'))
 	def create_message(self,sender,receiver,m_name,param=None):
 		if sender and receiver and m_name:
-			if param != None:
-				result = json.dumps(dict{'sender'=sender,'receiver'=receiver,'m_name'=m_name,'param'=param})
+			if handbooks.type_message.get(handbooks.name_message.get(m_name)).get('isParammetric'):
+				result = json.dumps((sender,receiver,handbooks.name_message.get(m_name),param))
 			else:
-				result = json.dumps(dict{'sender'=sender,'receiver'=receiver,'m_name'=m_name})
+				result = json.dumps((sender,receiver,handbooks.name_message.get(m_name)))
 		else:
 			result = "Error"
 		return result
 	def parse_message(self,mess):
-		messp=json.loads(data)
-		self.sender   = None 
-		self.receiver = None
-		self.m_type   = None #type_message
-		self.m_name   = None #Имя сообщения при получении берется из type_message.name при создании из параметров self.create_message()
-		self.param    = None #не обязательны, зависит от типа сообщения
-		
-		
-		
+		print 'Message: '+str(mess)
+		messp=json.loads(mess)
+		print 'Messagel: '+str(messp)
+		print 'mess0: '+str(messp[0])
+		print 'mess1: '+str(messp[1])
+		print 'mess2: '+str(messp[2])
+		self.sender   = messp[0]
+		self.receiver = messp[1]
+		self.m_type   = messp[2] #type_message
+		self.m_name   = handbooks.type_message.get(self.m_type) #Имя сообщения при получении берется из type_message.name при создании из параметров self.create_message()
+		print 'm_type: '+str(self.m_type)+'m_name: '+str(self.m_name)
+		if handbooks.type_message.get(self.m_type).get('isParammetric'):
+			self.param    = messp[3] #не обязательны, зависит от типа сообщения
 
 def sec_to_time(sec):
 	if sec>86400: print time.strftime('%d дней %H:%M:%S',time.gmtime(sec))
@@ -176,10 +188,13 @@ class coordinates:
 		else:
 			angle = 90 + beta
 	return angle
- def target_dot_from_dist_and_bear(self,bearing,dist):
+ def target_dot_from_dist_and_bear(self,bearing,dist,name='Raschet'):
 	dX=math.cos(math.radians(bearing))*dist
 	dY=math.sin(math.radians(bearing))*dist
-	return coordinates(name='Raschet', lat=(self.lat+(dX/10471.97333333)), lng=(self.lng+(dY/10471.97333333)))
+	return coordinates(name=name, lat=(self.lat+(dX/10471.97333333)), lng=(self.lng+(dY/10471.97333333)))
+
+def coord_from_dict(tdict):
+	return (coordinates(name=tdict.get('name'),lat=tdict.get('lat'), lng=tdict.get('lng'), alt=tdict.get('alt')))
 
 def glis_point(runway_beg, runway_stop, dist):
   dist_t = dist/(math.sqrt(((runway_beg.lat - runway_stop.lat)**2)+((runway_beg.lng - runway_stop.lng)**2))*10471.97333333)
