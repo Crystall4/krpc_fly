@@ -18,6 +18,8 @@ port = 1777
 udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 #bind - связывает адрес и порт с сокетом
 udp_socket.bind((host,port))
+#udp_socket.setblocking(0) # Неблокирующийся сокет
+#udp_socket.setblocking(1)
 
 n='n'
 y='y'
@@ -28,6 +30,7 @@ while True:
     
     #recvfrom - получает UDP сообщения
     conn, addr = udp_socket.recvfrom(1024)
+
     print('client addr: ', addr)
     print('data: ',conn)
     

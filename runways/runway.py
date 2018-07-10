@@ -174,6 +174,9 @@ class traffic_controller:
 	listen=''
 	port=''
 	status=''
+	sysQueue=None
+	messageQueue=None
+	
 	def __init__(self, name, vpp, host='127.0.0.1',port=5001):
 		if name and vpp:
 			self.name=name

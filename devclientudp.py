@@ -4,6 +4,7 @@
 
 import socket
 import json
+import time
 import sys
 sys.path.append("./lib")
 from tools   import *
@@ -18,10 +19,13 @@ host = 'localhost'
 port = 1777
 addr = (host,port)
 
+
 #encode - перекодирует введенные данные в байты, decode - обратно
 #Отправка
 #data = str.encode(buff)
+print time.clock()
 udp_socket.sendto(mbuff, addr)
+
 
 #получение
 data,addr = udp_socket.recvfrom(1024)
