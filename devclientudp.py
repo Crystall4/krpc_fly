@@ -13,7 +13,6 @@ tp = coordinates(name= 'recursive_dot',  lat= -0.0000000000000, lng=  12.4895128
 mtest=message()
 mbuff=mtest.create_message('pl-A4Aatm_142313','tc-KSC_KSC1','test param',tp.get())
 print 'mbuff: '+str(mbuff)
-buff = json.dumps(mbuff)
 udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 host = 'localhost'
 port = 1777

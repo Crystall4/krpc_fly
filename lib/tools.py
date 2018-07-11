@@ -68,6 +68,7 @@ class message:
 				result = json.dumps((sender,receiver,handbooks.name_message.get(m_name)))
 		else:
 			result = "Error"
+		self.buff=result
 		return result
 	def parse_message(self,mess):
 		#print 'Message: '+str(mess)
