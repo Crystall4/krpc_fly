@@ -92,9 +92,9 @@ TCZones_list={
 
 #имя,тип,порт
 TCList={
-	'Global_SuperViser':{'name':'SuperViser','type':0,  'zone':0,  'port':5000},
-	'KSC_Main'         :{'name':'Main',      'type':1,  'zone':11, 'port':5011},
-	'Test_Test'        :{'name':'Test',      'type':255,'zone':255,'port':1777}
+	'Global_SuperViser':{'name':'SuperViser','type':0,  'zone':0,  'host':'localhost','port':5000},
+	'KSC_Main'         :{'name':'Main',      'type':1,  'zone':11, 'host':'localhost','port':5011},
+	'Test_Test'        :{'name':'Test',      'type':255,'zone':255,'host':'localhost','port':1777}
 }
 
 #=======================================================================================================================================================================================================================================================
@@ -134,6 +134,7 @@ type_message={
 	2:{'name':'OK',   'isLogging':False,'log_mess':'', 'isParammetric':False}, #подтверждение 
 	3:{'name':'Bad',  'isLogging':False,'log_mess':'', 'isParammetric':False},  #отказ при нормальном получении
 	220:{'name':'tc register request',  'isLogging':False,'log_mess':'', 'isParammetric':True} #Запрос на регистрацию диспетчера,параметры {posstr:'позывной', zone:код зоны, tc_type:код типа, port:порт}
+	221:{'name':'tc register reconfig', 'isLogging':False,'log_mess':'', 'isParammetric':True} #Ответ на запрос регистрации диспетчера,параметры {posstr:'позывной', zone:код зоны, tc_type:код типа, port:порт}
 	254:{'name':'sys command',  'isLogging':False,'log_mess':'', 'isParammetric':True}, #системные комманды для управления диспетчерами
 	255:{'name':'test param',   'isLogging':False,'log_mess':'', 'isParammetric':True}
 }
@@ -143,6 +144,8 @@ name_message={
 	'Hello':1,
 	'OK'   :2,
 	'Bad'  :3,
+	'tc register request':220,
+	'sys command':254,
 	'test param':255
 }
 
