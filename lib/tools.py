@@ -70,8 +70,9 @@ class message:
 			result = "Error"
 		self.buff=result
 		return result
-	def parse_message(self,mess):
+	def parse_message(self,mess,addr=('localhost',0)):
 		#print 'Message: '+str(mess)
+		self.sender_addr
 		messp=json.loads(mess)
 		#print 'Messagel: '+str(messp)
 		#print 'mess0: '+str(messp[0])
@@ -80,7 +81,7 @@ class message:
 		self.sender   = messp[0]
 		self.receiver = messp[1]
 		self.m_type   = messp[2] #type_message
-		self.m_name   = handbooks.type_message.get(self.m_type) #Имя сообщения при получении берется из type_message.name при создании из параметров self.create_message()
+		self.m_name   = handbooks.type_message.get(self.m_type).get('name') #Имя сообщения при получении берется из type_message.name при создании из параметров self.create_message()
 		#print 'm_type: '+str(self.m_type)+' m_name: '+str(self.m_name.get('name'))
 		if handbooks.type_message.get(self.m_type).get('isParammetric'):
 			self.param    = messp[3] #не обязательны, зависит от типа сообщения

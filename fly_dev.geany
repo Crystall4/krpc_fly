@@ -25,15 +25,13 @@ long_line_column=72
 [files]
 current_page=3
 FILE_NAME_0=5530;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Frunways%2Frunway.py;0;4
-FILE_NAME_1=7411;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Flib%2Ftools.py;0;4
-FILE_NAME_2=11455;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Flib%2Fhandbooks.py;0;4
-FILE_NAME_3=2357;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Flib%2Frc.py;0;4
-FILE_NAME_4=759;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Fdevclientudp.py;0;4
-FILE_NAME_5=2712;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Fdevserverudpthreading.py;0;4
-FILE_NAME_6=3435;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Frunways%2FKSC.py;0;4
-FILE_NAME_7=630;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Ffly.py;0;4
-FILE_NAME_8=199;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Faircrafts%2Faircraft.py;0;4
-FILE_NAME_9=2395;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Faircrafts%2Fengine.py;0;4
+FILE_NAME_1=7502;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Flib%2Ftools.py;0;4
+FILE_NAME_2=7310;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Flib%2Fhandbooks.py;0;4
+FILE_NAME_3=2321;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Flib%2Frc.py;0;4
+FILE_NAME_4=148;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Flib%2Fsecond_disp_test.py;0;4
+FILE_NAME_5=437;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Flib%2Fclient_exit.py;0;4
+FILE_NAME_6=47;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Flib%2Fdisp_test.py;0;4
+FILE_NAME_7=3100;Python;0;EUTF-8;1;1;0;%2Fmedia%2Fcrystall4%2F7b7b485f-2e41-43a1-b45c-7b2915c1bc84%2Fcrystall4home%2F1%2Fksp-krpc%2Ffly_dev%2Ffly-develop%2Fdevserverudpthreading.py;0;4
 
 [VTE]
 last_dir=/media/crystall4/7b7b485f-2e41-43a1-b45c-7b2915c1bc84/crystall4home/1/ksp-krpc/fly_dev

@@ -4,9 +4,9 @@
 from rc import *
 
 
-GTC=RadioTC(name='SuperViser', zone=0, tc_type=0)
+STC=RadioTC(name='Main', zone=11, tc_type=1)
 
-GTC.run()
+STC.run()
 
 
 print 'END disp_test'

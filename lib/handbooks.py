@@ -131,10 +131,10 @@ VPP_list={
 type_message={
 	0:{'name':'Ping', 'isLogging':False,'log_mess':'', 'isParammetric':False}, #просто пинг для проверки
 	1:{'name':'Hello','isLogging':False,'log_mess':'', 'isParammetric':False}, #начало общения просто для проверки что получатель отвечает хоть как то)))
-	2:{'name':'OK',   'isLogging':False,'log_mess':'', 'isParammetric':False}, #подтверждение 
-	3:{'name':'Bad',  'isLogging':False,'log_mess':'', 'isParammetric':False},  #отказ при нормальном получении
-	220:{'name':'tc register request',  'isLogging':False,'log_mess':'', 'isParammetric':True} #Запрос на регистрацию диспетчера,параметры {posstr:'позывной', zone:код зоны, tc_type:код типа, port:порт}
-	221:{'name':'tc register reconfig', 'isLogging':False,'log_mess':'', 'isParammetric':True} #Ответ на запрос регистрации диспетчера,параметры {posstr:'позывной', zone:код зоны, tc_type:код типа, port:порт}
+	11:{'name':'OK',   'isLogging':False,'log_mess':'', 'isParammetric':False}, #подтверждение 
+	12:{'name':'Bad',  'isLogging':False,'log_mess':'', 'isParammetric':False},  #отказ при нормальном получении
+	220:{'name':'tc register request',  'isLogging':False,'log_mess':'', 'isParammetric':True}, #Запрос на регистрацию диспетчера,параметры {posstr:'позывной', zone:код зоны, tc_type:код типа, port:порт}
+	221:{'name':'tc register reconfig', 'isLogging':False,'log_mess':'', 'isParammetric':True}, #Ответ на запрос регистрации диспетчера,параметры {posstr:'позывной', zone:код зоны, tc_type:код типа, port:порт}
 	254:{'name':'sys command',  'isLogging':False,'log_mess':'', 'isParammetric':True}, #системные комманды для управления диспетчерами
 	255:{'name':'test param',   'isLogging':False,'log_mess':'', 'isParammetric':True}
 }

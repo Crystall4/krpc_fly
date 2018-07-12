@@ -12,7 +12,7 @@ OS_NAME = platform.system()
 
 # Константы
 HOST = 'localhost'
-PORT = 1777
+PORT = 5000
 
 # Единственная глобальная переменная
 # доступная всем потокам
@@ -73,7 +73,7 @@ if __name__ == '__main__':
     #server = socket.socket()
 	udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	udp_socket.bind((HOST, PORT))
-	udp_socket.setblocking(5)    
+	#udp_socket.settimeout(1)    
     #server.listen(5)
 
 	print(u'Сервер запущен на {}\n'.format(udp_socket.getsockname()))

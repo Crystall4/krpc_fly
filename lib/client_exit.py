@@ -13,7 +13,9 @@ udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 host = 'localhost'
 port = 5000
 addr = (host,port)
-udp_socket.sendto('exit', addr)
-time.sleep(0.1)
-udp_socket.sendto('', addr)
+mess=message()
+mess.create_message('Admin','tc-Global_SuperViser0','sys command','shutdown')
+udp_socket.sendto(mess.buff, addr)
+time.sleep(1.0)
+udp_socket.sendto(mess.buff, addr)
 udp_socket.close()
