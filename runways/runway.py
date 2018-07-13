@@ -59,7 +59,7 @@ class radialZone:
 			situation_route = self.TakeOff_beg_detour
 		elif self.status_TakeOff!=True and ((bearing-self.beg_deg)>(self.end_deg-bearing)):
 			situation_route = self.TakeOff_end_detour
-		else: situation_route = TakeOff_main_route
+		else: situation_route = self.TakeOff_main_route
 		for i in situation_route:
 			if i > 360.0 :
 				dot=self.zone_center.target_dot_from_dist_and_bear(bearing,self.subzones[sh])
@@ -170,33 +170,10 @@ class VPP:
 
 #======================================================================================================================
 class traffic_controller:
-	name=''
-	listen=''
-	port=''
-	status=''
-	sysQueue=None
-	messageQueue=None
+
 	
 	def __init__(self, name, vpp, host='127.0.0.1',port=5001):
-		if name and vpp:
-			self.name=name
-			self.vpp=vpp
-		#try:
-			self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			self.s.bind((host,port))
-			self.s.listen(1)
-		#except Exception:
-			#log('error open socket')
-			#self.status='Error'
-		#else:
-			#self.status='Listen'
+		pass
 	def run(self):
-		try:
-			while True:
-				conn, addr = self.s.accept()
-				data = conn.recv(1024)
-				print 'client is at', addr , data
-				conn.send(data)
-		except BaseException:
-			conn.close()
+		pass
 	

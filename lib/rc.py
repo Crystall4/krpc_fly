@@ -285,6 +285,7 @@ class RadioTC:
 			return {'result':True, 'from':'local', 'zone':subzone}
 		if 	status==None:
 			return {'result':False, 'from':'', 'zone':None}
+
 	def reg_sub_tc(self,rc_data):
 		subzone=None
 		subdisp=None
@@ -294,7 +295,8 @@ class RadioTC:
 		fz=self.find_zone(zp.get('zone'))
 		if fz.get('result'):
 			if fz.get('from') == 'handbook':
-				pass
+				subzone=fz.get('zone')
+				if subzone.get() ==  and 
 			
 			
 			

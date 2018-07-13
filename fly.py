@@ -45,6 +45,7 @@ class fly_plan:
 	SID           = None
 	STAR          = None
 	route         = []
+	compiled      = False
 	def plan_compile(self):
 		result=False
 		if self.aircraft_name != None:
@@ -61,14 +62,19 @@ class fly_plan:
 			finally:
 				pass
 		if self.begin_name != None:
+			
+				
 			pass
 		#=============================================================================================================
 		# Построение пути полета
+		
 		if self.begin.stage_type == 0:
 			if len(self.route) > 0:
 				pass
 			elif self.flplan.end.stage_type == 0:
 				tp = self.flplan.end.stage_data
+		
+		self.compiled = result
 		return result
 
 class fly_ap:
@@ -76,7 +82,7 @@ class fly_ap:
 	def __init__(self, flplan):
 		self.status = "PreInit"
 		self.flplan   = flplan
-		if self.flplan.plan_compile():
+		if self.flplan.compiled:
 			self.name     = flplan.flight_name
 			self.aircraft = flplan.aircraft
 			self.AtDeg    = 0.0
@@ -319,6 +325,7 @@ class fly_ap:
 		self.state_log(state,memo)
 		time.sleep(self.tsleep)
 	def Go(self):
+		if self.status != 'Ok': return 'Error'
 		if len(self.route) > 0:
 			self.take_off(self.flplan.begin.stage_data,self.flplan.route[0].stage_data)
 
