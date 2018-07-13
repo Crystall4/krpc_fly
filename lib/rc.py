@@ -18,6 +18,8 @@ class RadioTC:
 	posstr=''
 	pTC=None
 	status = 'pre_config'
+	subdisps=[]
+	subzones=[]
 	
 	def __init__(self,name=None, zone=None, tc_type=None,pzone=0):
 		if name != None and zone != None and tc_type != None:
@@ -73,32 +75,33 @@ class RadioTC:
 				# пока не будут считаны все имеющиеся
 				# в сокете данные
 				data, addr = client.recvfrom(1024)
+			except:
+				#print 'socket except'
+				pass 
+			else:
 				#if data: # Если есть данные
 					# Отправляем в очередь сообщений кортеж
 					# содержащий сокет отправителя
 					# и принятые данные
 				mess=message()
 				mess.parse_message(data, addr)
-				print('{}: От {} получено: {}'.format(name.get('name'), str(addr), data.decode()))
+				print('{}: От {} получено: {}'.format(name, str(addr), data.decode()))
 				inq.put((addr, mess))
 				
-                
-			except:
-				print 'socket except'
-				pass #break #В случае ошибки выходим из цикла
-			print 'receiver '+name+' cikl'	
+				
+			#print 'receiver '+name+' cikl'	
 			try:
 	            # Получаем из очереди сообщений
 	            # сокет отправителя и принятые данные
-				tname, message = sysq.get(timeout=0.1)
+				tname, sysmessage = sysq.get(timeout=0.1)
 			except Queue.Empty:
 				pass # Игнорируем отсутствие сообщений в очереди
 			else: # Если же сообщения есть
 				if tname== name:
-					print('{}: получено системное сообщение: {}'.format(name, message.decode()))
+					print('{}: получено системное сообщение: {}'.format(name, sysmessage.decode()))
 					sysq.task_done() # Сообщаем, что сообщение обработано
-				else: sysq.put((tname, message))
-			if  ((tname == name) and (message == 'exit')) : 
+				else: sysq.put((tname, sysmessage))
+			if  ((tname == name) and (sysmessage == 'exit')) : 
 				run=False
 				print 'Stop reciver '+ name
 				break
@@ -217,7 +220,7 @@ class RadioTC:
 			addr=None
 			data=None
 			self.p_udp_in_socket.sendto(mess.buff, (self.pTC.get('host'),self.pTC.get('port')))
-			re=self.readq(self.inq,10)
+			re=self.readq(self.inq,3)
 			self.sysq.put(('register_rec','exit'))
 			if re != None:
 				addr,data=re
@@ -265,6 +268,45 @@ class RadioTC:
 					self.outq.put((addr,message))
 					print('Ответ {} клиенту {} поставлен в очередь отправки'.format( message.decode(), str(sender)))
 					rcq.task_done() # Сообщаем, что сообщение обработано	
+	
+	def find_zone(self, name):
+		subzone=None
+		for hzone in handbooks.TCZones_list.keys():
+			if hzone.get('name')==name:
+				subzone=hzone
+				status='find zone in handbook'
+		if status=='find zone in handbook':
+			return {'result':True, 'from':'handbook', 'zone':subzone}
+		for localsz in self.subzones:
+			if localsz.get('name')==name:
+				subzone=localsz
+				status='find zone in local'
+		if status=='find zone in local':
+			return {'result':True, 'from':'local', 'zone':subzone}
+		if 	status==None:
+			return {'result':False, 'from':'', 'zone':None}
+	def reg_sub_tc(self,rc_data):
+		subzone=None
+		subdisp=None
+		status=''
+		zp=rc_data.get('param')
+		#проверка на существование подзоны
+		fz=self.find_zone(zp.get('zone'))
+		if fz.get('result'):
+			if fz.get('from') == 'handbook':
+				pass
+			
+			
+			
+			
+			#проверка на существование диспа в подзоне
+			for stc in self.subdisps:
+				if stc.get('name')==zp.get('name'):
+					pass
+			#сохранение диспа в массиве подчиненных диспов
+			#внесение измений в запись подзоны о диспетчере
+		else:
+			#не найдена зона
 		
 	def run(self):
 		self.registered()
@@ -274,7 +316,7 @@ class RadioTC:
 		else:
 			print 'TC: {} с позывным {}, приступает к работе в зоне {} на частоте {}'.format(self.name, self.posstr, self.zone.get('name'), self.port)
 		self.main_udp_in_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-		#self.main_udp_in_socket.settimeout(1)
+		self.main_udp_in_socket.settimeout(1)
 		self.main_udp_in_socket.bind((self.host, self.port))
 		self.main_rc_thread=threading.Thread(target=self.reciver, args=('main_reciver',self.main_udp_in_socket, self.inq, self.sysq))
 		self.main_rc_thread.start()
@@ -290,7 +332,6 @@ class RadioTC:
 				rc_addr,rc_data=self.inq.get(timeout=0.1)
 			except:
 				pass
-			#run=False
 			
 			if rc_data :
 				print 'Получено: {} от {} c с параметрами {}'.format(rc_data.m_name, rc_data.sender, rc_data.param)
@@ -306,6 +347,8 @@ class RadioTC:
 						fthr.get('sys_queue').put(rc_data)
 					else:
 						self.outq.put((rc_data.sender_addr,rc_data))
+				elif rc_data.m_name=='tc register request':
+					self.reg_sub_tc(rc_data)
 				elif rc_data.m_name=='sys command':
 					if rc_data.param == 'shutdown':
 						run = False

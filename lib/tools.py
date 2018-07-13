@@ -72,7 +72,7 @@ class message:
 		return result
 	def parse_message(self,mess,addr=('localhost',0)):
 		#print 'Message: '+str(mess)
-		self.sender_addr
+		self.sender_addr=addr
 		messp=json.loads(mess)
 		#print 'Messagel: '+str(messp)
 		#print 'mess0: '+str(messp[0])
