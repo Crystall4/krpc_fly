@@ -118,13 +118,27 @@ VPP_classes = {
 	15:{'Name':'Class','cover':2,'min_length':500.0, 'lighting':False}
 }
 
+
+
 #имя, класс, номер, направление, длинна, координаты начала и завершения, диспетчерский пункт подлета, пролета, диспетчерский пункт взлета
-VPP_list={
- 'KSC27':{'name':'KSC27','vpp_class':1,'number':27,'direction':270.4165, 'length':2460.77,'edge1':coord.get('KSC_West'),'edge2':coord.get('KSC_East'),'tc_STAR':TCList.get('KSC_Main'), 'tc_SPAN':TCList.get('KSC_Main'), 'tc_SID':TCList.get('KSC_Main') },
- 'KSC9' :{'name':'KSC9', 'vpp_class':1,'number':9, 'direction':90.41651, 'length':2460.77,'edge2':coord.get('KSC_West'),'edge1':coord.get('KSC_East'),'tc_STAR':TCList.get('KSC_Main'), 'tc_SPAN':TCList.get('KSC_Main'), 'tc_SID':TCList.get('KSC_Main') },
+VPP_sublist={
+ 'KSC27':{'name':'KSC27','number':27,'direction':270.4165, 'edge2':coord.get('KSC_West'),'edge1':coord.get('KSC_East')},
+ 'KSC9' :{'name':'KSC9' ,'number':9, 'direction':90.41651, 'edge1':coord.get('KSC_West'),'edge2':coord.get('KSC_East')},
  'Test' :{'name':'Test', 'vpp_class':1,'number':18,'direction':180.0000, 'length':2500.00,'edge1':coord.get('KSC_West'),'edge2':coord.get('KSC_East'),'tc_STAR':TCList.get('Test_Test'),'tc_SPAN':TCList.get('Test_Test'),'tc_SID':TCList.get('Test_Test')},
 }
 
+VPP_schemas={
+'KSC_VPP':{
+	'KSC27':{0:{}},
+	'KSC9' :{}
+	}
+}
+
+
+VPP_list={
+ 'KSC_VPP':{'name':'KSC9-27','vpp_class':1,'vpps':{9:'KSC9',27:'KSC27'},'length':2460.77,'tc_STAR':TCList.get('KSC_Main'), 'tc_SPAN':TCList.get('KSC_Main'), 'tc_SID':TCList.get('KSC_Main') },
+ 'Test' :{'name':'Test', 'vpp_class':1,'number':18,'direction':180.0000, 'length':2500.00,'edge1':coord.get('KSC_West'),'edge2':coord.get('KSC_East'),'tc_STAR':TCList.get('Test_Test'),'tc_SPAN':TCList.get('Test_Test'),'tc_SID':TCList.get('Test_Test')},
+}
 
 #=======================================================================================================================================================================================================================================================
 #Радиобмен

@@ -5,6 +5,7 @@ import json
 import math
 import sys
 sys.path.append("../lib")
+sys.path.append("./lib")
 from tools import *
 
 #======================================================================================================================
@@ -46,9 +47,9 @@ class radialZone:
 				self.beg_deg=end_deg
 				self.end_deg=beg_deg
 		else:
-			print "Error create zone"
+			log("Error create zone")
 	def check_belonging_bearing(self,bearing):
-		return (bearing>self.beg_deg and bearing<self.end_deg)
+		return (bearing>=self.beg_deg and bearing<=self.end_deg)
 	def check_belonging_dot(self,coord):
 		bearing=coord.bearing_line_from(self.zone_center)
 		return (bearing>beg_deg and bearing<end_deg and coord.dist_line_from(self.zone_center)<self.subzones[len(self.subzones)-1])
@@ -79,8 +80,8 @@ class vpp_bearing:
 	edge2 = None
 	def __init__(self, name='Unknown', edge1=None, edge2=None):
 		self.name  = name
-		self.edge1 = edge1
-		self.edge2 = edge2
+		self.edge1 = coord_from_dict(edge1)
+		self.edge2 = coord_from_dict(edge2)
 	def get_distance(self,CP):
 		self.edge1.dist_line(CP)
 
@@ -88,15 +89,17 @@ class vpp_bearing:
 class VPP:
 	vpp_bearings = None
 	zones = None
-	
-	def __init__(self, vpp_bearings, zones):
+	name=''
+	def __init__(self,name, vpp_bearings, zones):
+		self.name=name
 		self.vpp_bearings = vpp_bearings
 		self.zones=zones
 
 	def get_bear(self, coord):
 		#Получить направление захода/выхода
 		result = self.vpp_bearings[0]
-		if self.vpp_bearings[0].edge1.dist_line(coord) > self.vpp_bearings[1].edge1.dist_line(coord):
+		if self.vpp_bearings[0].edge2.dist_line(coord) > self.vpp_bearings[1].edge2.dist_line(coord):
+			
 			result=self.vpp_bearings[0]
 		else:
 			result=self.vpp_bearings[1]
@@ -106,22 +109,20 @@ class VPP:
 		#Получение схемы выхода из зоны ВПП
 		#SID1:Дальний край ВПП
 		#--------------SID1
-		max_dist_bear=0.0
+		#max_dist_bear=0.0
 		bear=self.get_bear(CP)
 		SID1=bear.edge1
-		for bear in self.vpp_bearings:
-			td = bear.get_distance(CP)
-			if td > max_dist_bear:
-				max_dist_bear = td
-				SID1 = bear.edge1
-				log(SID1)
-		
 		bearing_Z=target.bearing_line_from(SID1)
+		#print 'target.bearing_line_from(SID1): '+str(bearing_Z)
 		zone=''
 		for nz in self.zones:
-			if nz.check_belonging_bearing(bearing_Z): zone=nz
+			if nz.check_belonging_bearing(bearing_Z):
+				#print 'ok zone '+nz.name
+				zone=nz
+				
+		#print 'ZoneDebug: '+str(zone.name)
 		if zone.status_TakeOff:
-			route=zone.get_route(bearing)
+			route=zone.get_TakeOff_route(bearing_Z)
 		else:
 			route=zone.get_TakeOff_route(bearing_Z)
 		#--------------SID2

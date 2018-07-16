@@ -12,7 +12,7 @@ icelandEast = coordinates(name='icelandEast', lat=-1.51671773150452880, lng=-71.
 icelandWest = coordinates(name='icelandWest', lat=-1.51772268480006560, lng=-71.96820722802198000, alt=135.2)
 ivpp9	 = runway.vpp_bearing("iceland9" ,icelandWest,icelandEast)
 
-iceland_VPP= runway.VPP([ivpp9],[])
+iceland_VPP= runway.VPP('icelandVPP',[ivpp9],[])
 
 #----------------------------------------name--------------------beg_deg,-end_deg,--STO,-SLA,----centerZ,--------subzones------------------beg_det-------------------end_det--------------main_route----------------------------------message--------------------------------------------------------------------									
 iceland_VPP.zones.append(radialZone("iceland_GlissEast"         ,   85.0,   105.0, False,True  ,icelandEast,[12000,24000,32000],      [106.0,106.0,106.0],      [106.0,106.0,106.0],      [],                  [], "Зона глиссады при заходе на восточный край островной ВПП"))

@@ -18,10 +18,13 @@ globals().update(importlib.import_module(vpp_str).__dict__)
 vpp_str='iceland'
 globals().update(importlib.import_module(vpp_str).__dict__)
 
-flplan          = fly.fly_plan()
+flplan               = fly.fly_plan()
+flplan.pf            = 'handbook'
 flplan.aircraft_name = 'Aeris_4A_atmos'
 flplan.begin_name    = "KSC_VPP"
-flplan.end_name      = "iceland_VPP"
+flplan.to_vpp_bear   = 9
+flplan.end_name      = "KSC_VPP"
+flplan.land_vpp_bear = 27
 
 
  

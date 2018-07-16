@@ -10,6 +10,7 @@ import math
 import krpc
 import time
 import pid
+import handbooks
 
 #airc_str='Aeris_4A_atmos'
 sys.path.append("./aircrafts")
@@ -35,6 +36,9 @@ class route_stage:
 
 class fly_plan:
 	name=''
+	pf='handbook'
+	to_vpp_bear   = 'any'    #запрашиваемая полоса для взлета
+	land_vpp_bear = 'any'	 #запрашиваемая полоса для посадки
 	aircraft_name = None
 	begin_name    = None
 	end_name      = None
@@ -59,12 +63,21 @@ class fly_plan:
 					result = True
 			except:
 				log("подключение эиркрафта неудачно")
+				return "aircraft error"
 			finally:
 				pass
 		if self.begin_name != None:
-			
-				
-			pass
+			if self.pf='handbook':
+				if (self.begin_name != 'fly' or self.begin_name != 'orbit' or self.begin_name != 'space'):
+					start_obj=handbooks.VPP_list.get(begin_name,None)
+					if start_obj==None:
+						log('Not start object from handbook')
+						return 'start object error'
+					else:
+						if to_vpp_bear!='any':
+							start_vpp = start_obj.get('vpps').get(to_vpp_bear)
+							
+				pass
 		#=============================================================================================================
 		# Построение пути полета
 		
