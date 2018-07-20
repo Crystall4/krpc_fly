@@ -72,7 +72,64 @@ class radialZone:
 			sh+=1
 		return tuple(route)
 
-
+class VPP_radialZone:
+	name="default"
+	message=""
+	beg_deg=0
+	end_deg=0
+	workbeg_deg=0
+	workend_deg=0
+	status_TakeOff=True
+	status_Landing =True
+	subzones=[12,24,32]
+	vpp_bearing = None
+	def __init__(self,name="NoName",beg_deg=0,end_deg=0,workbeg_deg=0,workend_deg=0,status_TakeOff=False,status_Landing=False,vpp_bearing=None,subzones=[12000,24000,32000],message=""):
+		if beg_deg!=end_deg:
+			self.name=name
+			self.message=message
+			self.status_TakeOff=status_TakeOff
+			self.status_Landing=status_Landing
+			self.vpp_bearing =vpp_bearing
+			#self.zone_center.name = '"'+name +'" zone center'
+			subzones.sort()
+			self.subzones=subzones
+			if workbeg_deg<workend_deg:
+				self.workbeg_deg=workbeg_deg
+				self.workend_deg=workend_deg
+			else:
+				self.workbeg_deg=workend_deg
+				self.workend_deg=workbeg_deg
+			if beg_deg<end_deg:
+				self.beg_deg=beg_deg
+				self.end_deg=end_deg
+			else:
+				self.beg_deg=end_deg
+				self.end_deg=beg_deg
+			
+		else:
+			log("Error create zone")
+	def check_belonging_bearing(self,bearing):
+		return (bearing>=self.workbeg_deg and bearing<=self.workend_deg)
+	def get_TakeOff_route(self,bearing):
+		route = []
+		sh=0
+		
+		if self.status_TakeOff!=True and ((bearing-self.beg_deg)<(self.end_deg-bearing)):
+			situation_route = self.TakeOff_beg_detour
+		elif self.status_TakeOff!=True and ((bearing-self.beg_deg)>(self.end_deg-bearing)):
+			situation_route = self.TakeOff_end_detour
+		else: situation_route = self.TakeOff_main_route
+		for i in situation_route:
+			if i > 360.0 :
+				dot=self.zone_center.target_dot_from_dist_and_bear(bearing,self.subzones[sh])
+			else:
+				dot=self.zone_center.target_dot_from_dist_and_bear(i,self.subzones[sh])
+			dot.name="SID "+str(sh+1)+" from "+self.name+" zone"
+			dot.alt=self.TakeOff_subzones_alt[sh]
+			route.append(dot)
+			sh+=1
+		return tuple(route)
+		
 class vpp_bearing:
 	name  = ''
 	VPP   = None
@@ -111,7 +168,7 @@ class VPP:
 		#--------------SID1
 		#max_dist_bear=0.0
 		bear=self.get_bear(CP)
-		SID1=bear.edge1
+		SID1=bear.edge2
 		bearing_Z=target.bearing_line_from(SID1)
 		#print 'target.bearing_line_from(SID1): '+str(bearing_Z)
 		zone=''
@@ -171,8 +228,6 @@ class VPP:
 
 #======================================================================================================================
 class traffic_controller:
-
-	
 	def __init__(self, name, vpp, host='127.0.0.1',port=5001):
 		pass
 	def run(self):

@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import sys
+sys.path.append("./lib")
+from tools import *
+
 import engine
+
 aircraft_status = {0:"Off",1:"warm-up",2:"TakeOff mode",3:"Cruise mode",4:"Landing mode",5:"Forsage maneur mode"}
 		
 class Aircraft:
@@ -8,6 +13,7 @@ class Aircraft:
 	bnamber_prefix      = ''
 	bnamber_postfix     = ''
 	krpc_vessel         = None
+	krpc_control        = None
 	maxAtDeg            = 5.0
 	minAtDeg            = -7.0
 	minVERTICALSPEED    = -10.0
@@ -45,22 +51,28 @@ class Aircraft:
 		self.name = ""
 		
 	def landingspeed(self):
-		return self.landingspeed0+(self.landingspeed0*(((vessel.mass-self.mass0)/self.mass0)/self.Klandingspeed))
+		return self.landingspeed0+(self.landingspeed0*(((self.krpc_vessel.mass-self.mass0)/self.mass0)/self.Klandingspeed))
 	
 	def pre_fly(self,krpc_vessel=None):
 		result = False
 		if krpc_vessel != None:
 			self.krpc_vessel = krpc_vessel
 			self.krpc_flight = krpc_vessel.flight()
+			self.krpc_control= krpc_vessel.control
 		return True
 		
-	def pre_take_off(self,VPP,First_dot):
+	def pre_take_off(self):
 		return True
 	
 	def append_engines(self):
 		return False
 		
-	def start_engines(self,status):
+	def start_engines(self):
+		log('Razogrev')
+		self.krpc_control.throttle = 0.0
+		if self.krpc_vessel.available_thrust == 0.0 :
+			self.krpc_control.activate_next_stage()
+			time.sleep(0.2)
 		return False
 	
 	def curr_position(self):

@@ -22,8 +22,8 @@ sys.path.append("./aircrafts")
 vpp_str='KSC'
 sys.path.append("./runways")
 globals().update(importlib.import_module(vpp_str).__dict__)
-vpp_str='iceland'
-globals().update(importlib.import_module(vpp_str).__dict__)
+#vpp_str='iceland'
+#globals().update(importlib.import_module(vpp_str).__dict__)
 
 
 type_flight={0:"TakeOff and Landing", 1:"Landing to", 2:"TakeOff From", 3:"Cruise and Landing", 4:"TakeOff and Cruise"}
@@ -49,6 +49,7 @@ class fly_plan:
 	SID           = None
 	STAR          = None
 	route         = []
+	CruisePlan	  = []
 	compiled      = False
 	def plan_compile(self):
 		result=False
@@ -59,7 +60,7 @@ class fly_plan:
 				globals().update(importlib.import_module(self.aircraft_name).__dict__)
 				if basic_aircraft != None :
 					self.aircraft = basic_aircraft
-					log("Аппарат "+self.aircraft_name+" подключен успешно")
+					log("Аппарат "+self.aircraft_name+" подключен успешно",5)
 					result = True
 			except:
 				log("подключение эиркрафта неудачно")
@@ -67,25 +68,26 @@ class fly_plan:
 			finally:
 				pass
 		if self.begin_name != None:
-			if self.pf='handbook':
+			if self.pf=='handbook':
 				if (self.begin_name != 'fly' or self.begin_name != 'orbit' or self.begin_name != 'space'):
-					start_obj=handbooks.VPP_list.get(begin_name,None)
+					start_obj=handbooks.VPP_list.get(self.begin_name,None)
 					if start_obj==None:
 						log('Not start object from handbook')
 						return 'start object error'
 					else:
-						if to_vpp_bear!='any':
-							start_vpp = start_obj.get('vpps').get(to_vpp_bear)
+						if self.to_vpp_bear!='any':
+							self.SID=self.begin.get_SID(self.CruisePlan[0],self.begin_dot)
+							#start_vpp = start_obj.get('vpps').get(self.to_vpp_bear)
 							
-				pass
+							
 		#=============================================================================================================
 		# Построение пути полета
 		
-		if self.begin.stage_type == 0:
-			if len(self.route) > 0:
-				pass
-			elif self.flplan.end.stage_type == 0:
-				tp = self.flplan.end.stage_data
+		#if self.begin.stage_type == 0:
+			#if len(self.route) > 0:
+				#pass
+			#elif self.flplan.end.stage_type == 0:
+				#tp = self.flplan.end.stage_data
 		
 		self.compiled = result
 		return result
@@ -176,7 +178,7 @@ class fly_ap:
 			self.TTrottle = self.maxTrottle
 		if self.TTrottle < self.minTrottle:
 			self.TTrottle = self.minTrottle
-	def pre_take_off(self,VPP,First_dot):
+	def pre_take_off(self):
 		self.aircraft.pre_take_off()
 		self.pre_fly()
 		self.control.throttle = 0
@@ -186,36 +188,37 @@ class fly_ap:
 		self.control.gear = True
 		self.control.brakes = True
 		self.control.wheel_steering = 0
-		self.SID=VPP.get_SID(First_dot)
-		self.tLATLONG = self.SID[0]
+		self.tLATLONG = self.flplan.SID[0]
 		self.ap.target_pitch_and_heading(0.45, self.tLATLONG.bearing_line(self.aircraft.curr_position()))
-	def take_off(self,VPP,First_dot):
-		self.pre_take_off(VPP)
+	def take_off(self):
+		self.pre_take_off()
 		self.aircraft.start_engines()
-		#print 'Razogrev'
-		#self.control.throttle = 0
-		#if self.vessel.available_thrust == 0.0 :
-			#self.control.activate_next_stage()
-			#time.sleep(0.2)
-		#self.control.throttle = 1
+		self.control.throttle = 1
 		self.control.lights = True
+		log('tLATLONG.bearing_line('+str(self.tLATLONG.bearing_line(self.aircraft.curr_position()))+')',level=9)
+		log('tLATLONG.name = '+str(self.tLATLONG.name),level=9)
+		log('tLATLONG.distanse = '+str(self.tLATLONG.name),level=9)
 		while ((self.vessel.thrust) < (self.vessel.available_thrust * self.aircraft.KRazogrevTrust)) and self.surf_flight.speed < 5:
-		 time.sleep(0.5)
-		#print 'Probeg'
+			self.ap.target_pitch_and_heading(3.0, self.tLATLONG.bearing_line(self.aircraft.curr_position()))
+			log(self.tLATLONG.bearing_line(self.aircraft.curr_position()))
+			time.sleep(0.5)
+		log('Probeg')
 		self.control.brakes = False
-		while self.surf_flight.speed < self.aircraft.landingspeed() and self.surf_flight.surface_altitude < 10:
-			self.ap.target_pitch_and_heading(0.45, self.tLATLONG.bearing_line(self.aircraft.curr_position()))
+		while self.surf_flight.speed < self.aircraft.landingspeed() or self.surf_flight.surface_altitude < 10:
+			self.ap.target_pitch_and_heading(6.0, self.tLATLONG.bearing_line(self.aircraft.curr_position()))
+			#log(self.tLATLONG.bearing_line(self.aircraft.curr_position()))
 			self.vessel.auto_pilot.target_roll = 0
 			time.sleep(0.1)
-		#print 'Otrblv'
+		log('Otrblv')
 		self.control.toggle_action_group(9)
-		while surf_flight.surface_altitude < 15:
-			self.ap.target_pitch_and_heading(3.0, self.tLATLONG.bearing_line(self.aircraft.curr_position()))
+		while self.surf_flight.surface_altitude < 15:
+			self.tLATLONG=self.flplan.SID[0]
+			self.ap.target_pitch_and_heading(6.0, self.tLATLONG.bearing_line(self.aircraft.curr_position()))
 			self.vessel.auto_pilot.target_roll = 0
 			time.sleep(0.1)
 		self.control.gear = False
 		self.control.lights = False
-		for d in self.SID[1:]:
+		for d in self.flplan.SID[1:]:
 			self.climb(d.alt,d)
 	def climb(self,alt=1000,targetDot=''):
 		state = "Climb up to "+alt

@@ -95,6 +95,7 @@ class coordinates:
  lng=0.0
  alt=0.0
  name=''
+ mindeg=10471.9753333333333333333333333333333333333333333333333333333333
  def get(self):
   return dict(name=self.name, lat=self.lat, lng=self.lng, alt=self.alt)
  def set(self, lat, lng, alt=0, name=''):
@@ -114,11 +115,11 @@ class coordinates:
  def dist_deg(self, CP):
   return math.sqrt(((self.lat - CP.lat)**2)+((self.lng - CP.lng)**2))
  def dist_line(self,CP):
-  return math.sqrt(((self.lat - CP.lat)**2)+((self.lng - CP.lng)**2))*10471.97333333
+  return math.sqrt(((self.lat - CP.lat)**2)+((self.lng - CP.lng)**2))*self.mindeg
  def dist_line_from(self,from_dot):
-	 return math.sqrt(((self.lat - from_dot.lat)**2)+((self.lng - from_dot.lng)**2))*10471.97333333
+	 return math.sqrt(((self.lat - from_dot.lat)**2)+((self.lng - from_dot.lng)**2))*self.mindeg
  def dist_gc(self,CP):
-  rad = 600000
+  rad = 600000.
   lat1 = CP.lat*math.pi/180.
   lat2 = self.lat*math.pi/180.
   long1 = CP.lng*math.pi/180.
@@ -135,7 +136,7 @@ class coordinates:
   ad = math.atan2(y,x)
   return ad*rad 
  def bearing_gc(self,CP):
-  rad = 600000
+  rad = 600000.
   lat1 = CP.lat*math.pi/180.
   lat2 = self.lat*math.pi/180.
   long1 = CP.lng*math.pi/180.
@@ -193,25 +194,25 @@ class coordinates:
  def target_dot_from_dist_and_bear(self,bearing,dist,name='Raschet'):
 	dX=math.cos(math.radians(bearing))*dist
 	dY=math.sin(math.radians(bearing))*dist
-	return coordinates(name=name, lat=(self.lat+(dX/10471.97333333)), lng=(self.lng+(dY/10471.97333333)))
+	return coordinates(name=name, lat=(self.lat+(dX/self.mindeg)), lng=(self.lng+(dY/self.mindeg)))
 
 def coord_from_dict(tdict):
 	return (coordinates(name=tdict.get('name'),lat=tdict.get('lat'), lng=tdict.get('lng'), alt=tdict.get('alt')))
 
 def glis_point(runway_beg, runway_stop, dist):
-  dist_t = dist/(math.sqrt(((runway_beg.lat - runway_stop.lat)**2)+((runway_beg.lng - runway_stop.lng)**2))*10471.97333333)
+  dist_t = dist/(math.sqrt(((runway_beg.lat - runway_stop.lat)**2)+((runway_beg.lng - runway_stop.lng)**2))*runway_beg.mindeg)
   glis_dot = coordinates(name='glis point from '+runway_beg.name, lat=(runway_beg.lat+dist_t*(runway_beg.lat-runway_stop.lat)), lng=(runway_beg.lng+dist_t*(runway_beg.lng-runway_stop.lng)), alt=(dist*0.1)+70.0)
   return glis_dot
 
 def dist_to_line(runway_beg, runway_stop, curr_point):
   point_dist=((runway_beg.lng-runway_stop.lng)*curr_point.lat+(runway_stop.lat-runway_beg.lat)*curr_point.lng+(runway_beg.lat*runway_stop.lng-runway_stop.lat*runway_beg.lng))/math.sqrt(((runway_beg.lng-runway_stop.lng)**2)+((runway_stop.lat-runway_beg.lat)**2))
-  return point_dist*10471.97333333
+  return point_dist*mindeg
 
 def dist_from_line(runway_beg, runway_stop, curr_point):
   cf=((curr_point.lat-runway_beg.lat)*(runway_stop.lat-runway_beg.lat)+(curr_point.lng-runway_beg.lng)*(runway_stop.lng-runway_beg.lng))/((runway_beg.lat-runway_stop.lat)**2+(runway_beg.lng-runway_stop.lng)**2)
   pp_x=runway_beg.lat+cf*(runway_stop.lat-runway_beg.lat)
   pp_y=runway_beg.lng+cf*(runway_stop.lng-runway_beg.lng)
-  return math.sqrt(((runway_beg.lat - pp_x)**2)+((runway_beg.lng - pp_y)**2))*10471.97333333
+  return math.sqrt(((runway_beg.lat - pp_x)**2)+((runway_beg.lng - pp_y)**2))*runway_beg.mindeg
 
 def dist_from_line_deg(runway_beg, runway_stop, curr_point):
   cf=((curr_point.lat-runway_beg.lat)*(runway_stop.lat-runway_beg.lat)+(curr_point.lng-runway_beg.lng)*(runway_stop.lng-runway_beg.lng))/((runway_beg.lat-runway_stop.lat)**2+(runway_beg.lng-runway_stop.lng)**2)

@@ -127,12 +127,20 @@ VPP_sublist={
  'Test' :{'name':'Test', 'vpp_class':1,'number':18,'direction':180.0000, 'length':2500.00,'edge1':coord.get('KSC_West'),'edge2':coord.get('KSC_East'),'tc_STAR':TCList.get('Test_Test'),'tc_SPAN':TCList.get('Test_Test'),'tc_SID':TCList.get('Test_Test')},
 }
 
-VPP_schemas={
+VPP_SID_schemas={
 'KSC_VPP':{
 	'KSC27':{0:{}},
 	'KSC9' :{}
 	}
 }
+
+VPP_STAR_schemas={
+'KSC_VPP':{
+	'KSC27':{0:{}},
+	'KSC9' :{}
+	}
+}
+
 
 
 VPP_list={
